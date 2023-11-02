@@ -1,0 +1,44 @@
+project:
+  type: book
+
+book:
+  title: "eBird Status & Trends Workshop (TWS 2023)"
+  chapters:
+    - index.qmd
+    - status.qmd
+    - trends.qmd
+
+  editor:
+    mode: source
+
+  page-footer:
+    left: "eBird Status & Trends Workshop (TWS 2023)"
+  site-url: https://ebird.github.io/ebirdst-workshop_tws-2023/
+  repo-url: https://github.com/ebird/ebirdst-workshop_tws-2023/
+  repo-branch: main
+  repo-actions: [edit, issue]
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    author-meta: "Matthew Strimas-Mackey, Orin Robinson, Kylee Dunham"
+
+knitr:
+  opts_chunk:
+    comment: "#>"
+    collapse: true
+    cache: false
+    warn: false
+    error: false
+    message: false
+    out.width: "\\textwidth"
+    fig.align: "center"
+    fig.show: "hold"
+    cache.path: "cache/"
+    R.options:
+      digits: 3
+      knitr.kable.NA: ""
+      dplyr.print_min: 6
+      dplyr.print_max: 6
