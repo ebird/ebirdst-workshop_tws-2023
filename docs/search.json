@@ -2,28 +2,28 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "eBird Status & Trends Workshop (TWS 2023)",
+    "title": "eBird Status and Trends",
     "section": "",
     "text": "Introduction\nThis website contains the notes for a workshop on the eBird Status and Trends Data Products presented at the The Wildlife Society (TWS) Conference in November 2023. The workshop will be divided into two sections:\nIn each section, we cover how to download the data, load it into R, and use it for some common conservation and management applications."
   },
   {
     "objectID": "index.html#sec-intro-setup",
     "href": "index.html#sec-intro-setup",
-    "title": "eBird Status & Trends Workshop (TWS 2023)",
+    "title": "eBird Status and Trends",
     "section": "Setup",
     "text": "Setup\nThis workshop is intended to be interactive. All examples are written in the R programming language, and the instructor will work through the examples in real time, while the attendees are encouraged following along by writing the same code. To ensure we can avoid any unnecessary delays, please follow these setup instructions prior to the workshop:\n\nCreate an eBird account if you don’t already have one and request access to the eBird Status and Trends Data Products by filling out the access request form at: https://science.ebird.org/en/status-and-trends/download-data\nDownload and install the latest version of R. You must have R version 4.0.0 or newer to follow along with this workshop\nDownload and install the latest version of RStudio. RStudio is not required for this workshop; however, the instructors will be using it and you may find it easier to following along if you’re working in the same environment.\nWorking with the eBird Status and Trends Data Products in R requires the ebirdst R package. Install the latest version from GitHub by running the following code:\n\n\nif (!requireNamespace(\"remotes\", quietly = TRUE)) {\n  install.packages(\"remotes\")\n}\nremotes::install_github(\"ebird/ebirdst\", ref = \"trends\")\n\n\nEnsure all packages are updated to their most recent versions by clicking on the Update button on the Packages tab in RStudio."
   },
   {
     "objectID": "index.html#sec-intro-tidyverse",
     "href": "index.html#sec-intro-tidyverse",
-    "title": "eBird Status & Trends Workshop (TWS 2023)",
+    "title": "eBird Status and Trends",
     "section": "Tidyverse",
     "text": "Tidyverse\nThroughout this workshop, we use packages from the Tidyverse, an opinionated collection of R packages designed for data science. Packages such as ggplot2, for data visualization, and dplyr, for data manipulation, are two of the most well known Tidyverse packages; however, there are many more. We’ll try to explain any functions as they come up; however, for a good general resource on working with data in R using the Tidyverse see the free online book R for Data Science by Hadley Wickham.\nThe one piece of the Tidyverse that we will cover up front is the pipe operator %&gt;%. The pipe takes the expression to the left of it and “pipes” it into the first argument of the expression on the right.\n\nlibrary(dplyr)\n\n# without pipe\nmean(1:10)\n#&gt; [1] 5.5\n\n# with pipe\n1:10 %&gt;% mean()\n#&gt; [1] 5.5\n\nThe pipe can code significantly more readable by avoiding nested function calls, reducing the need for intermediate variables, and making sequential operations read left-to-right. For example, to add a new variable to a data frame, then summarize using a grouping variable, the following are equivalent:\n\n# intermediate variables\nmtcars_kg &lt;- mutate(mtcars, wt_kg = 454 * wt)\nmtcars_grouped &lt;- group_by(mtcars_kg, cyl)\nsummarize(mtcars_grouped, wt_kg = mean(wt_kg))\n#&gt; # A tibble: 3 × 2\n#&gt;     cyl wt_kg\n#&gt;   &lt;dbl&gt; &lt;dbl&gt;\n#&gt; 1     4 1038.\n#&gt; 2     6 1415.\n#&gt; 3     8 1816.\n\n# nested function calls\nsummarize(\n  group_by(\n    mutate(mtcars, wt_kg = 454 * wt),\n    cyl\n  ),\n  wt_kg = mean(wt_kg)\n)\n#&gt; # A tibble: 3 × 2\n#&gt;     cyl wt_kg\n#&gt;   &lt;dbl&gt; &lt;dbl&gt;\n#&gt; 1     4 1038.\n#&gt; 2     6 1415.\n#&gt; 3     8 1816.\n\n# pipes\nmtcars %&gt;% \n  mutate(wt_kg = 454 * wt) %&gt;% \n  group_by(cyl) %&gt;% \n  summarize(wt_kg = mean(wt_kg))\n#&gt; # A tibble: 3 × 2\n#&gt;     cyl wt_kg\n#&gt;   &lt;dbl&gt; &lt;dbl&gt;\n#&gt; 1     4 1038.\n#&gt; 2     6 1415.\n#&gt; 3     8 1816.\n\n\n\n\n\n\n\nExercise\n\n\n\nRewrite the following code using pipes:\n\nset.seed(1)\nround(log(runif(10, min = 0.5)), 1)\n#&gt;  [1] -0.5 -0.4 -0.2  0.0 -0.5 -0.1  0.0 -0.2 -0.2 -0.6\n\n\n\n\n\n\n\n\n\nSolution\n\n\n\n\n\n\nset.seed(1)\nrunif(10, min = 0.5) %&gt;% \n  log() %&gt;% \n  round(digits = 1)\n#&gt;  [1] -0.5 -0.4 -0.2  0.0 -0.5 -0.1  0.0 -0.2 -0.2 -0.6"
   },
   {
     "objectID": "index.html#sec-intro-spatial",
     "href": "index.html#sec-intro-spatial",
-    "title": "eBird Status & Trends Workshop (TWS 2023)",
+    "title": "eBird Status and Trends",
     "section": "Working with spatial data in R",
     "text": "Working with spatial data in R\nThe Status and Trends Data Products are mostly spatial data in one of the following formats:\n\nRaster: values assigned to a regular grid of square cells. Data products of this type are stored in GeoTIFF format and we use the R package terra to work with them. vector\nPolygons: polygon boundaries with attribute data assigned to each polygon. Data products of this type (e.g. range polgyons) are stored in GeoPackage format and we use the R package sf to work with them.\nPoints: point locations defined by a pair of coordinates with attribute data assigned to each point. Data products of this type are stored in CSV or Parquet format and we work with these data in R as data frames or in an excplicitly spatial format using the sf package.\n\nSome familiarity of the main spatial R packages sf and terra will be useful for following along with this workshop. The free online book Geocomputation with R is a good resource on working with spatial data in R."
   },

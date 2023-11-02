@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 book:
-  title: "eBird Status & Trends Workshop (TWS 2023)"
+  title: "eBird Status and Trends"
   chapters:
     - index.qmd
     - status.qmd
@@ -13,7 +13,7 @@ book:
     mode: source
 
   page-footer:
-    left: "eBird Status & Trends Workshop (TWS 2023)"
+    left: "eBird Status and Trends Workshop (TWS 2023)"
   site-url: https://ebird.github.io/ebirdst-workshop_tws-2023/
   repo-url: https://github.com/ebird/ebirdst-workshop_tws-2023/
   repo-branch: main
