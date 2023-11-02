@@ -7,3 +7,245 @@ editor_options:
 ---
 
 # eBird Trends Data Products {#sec-trends}
+
+The eBird Trends Data Products provide estimates of trends in relative abundance based on eBird data. Trend estimates are made on a 27 km by 27 km grid for a single season per species (breeding, non-breeding, or resident). For further details on the methodology used to estimate these trends consult the associated paper:
+
+<blockquote>
+Fink, D., Johnston, A., Strimas-Mackey, M., Auer, T., Hochachka, W. M., Ligocki, S., Oldham Jaromczyk, L., Robinson, O., Wood, C., Kelling, S., & Rodewald, A. D. (2023). A Double machine learning trend model for citizen science data. Methods in Ecology and Evolution, 00, 1–14. https://doi.org/10.1111/2041-210X.14186
+</blockquote>
+
+This lesson will introduce attendees to the eBird Trends Data Products. We will demonstrate how to download trends data, load the data into R, and use it to estimate regional trends and multi-species trends. Let's start by loading the packages we'll use throughout this lesson
+
+```{r}
+#| label: trends-packages
+library(dplyr)
+library(rnaturalearth)
+library(sf)
+library(terra)
+library(ebirdst)
+```
+
+## eBird Trends species {#sec-trends-species}
+
+The 2022 release of the eBird Trends Data Products includes data for `r scales::comma(sum(ebirdst::ebirdst_runs$has_trends))` species. The data frame `ebirdst_runs` that we examined in the [previous lesson](status.qmd#sec-status-species) indicates which species have trends estimates with the `has_trends` column. We can filter the data frame and only select those columns relevant to trends.
+
+```{r}
+#| label: trends-species-runs
+trends_runs <- ebirdst_runs %>% 
+  filter(has_trends) %>% 
+  select(species_code, common_name,
+         trends_season, trends_region,
+         trends_start_year, trends_end_year,
+         trends_start_date, trends_end_date,
+         rsquared, beta0)
+glimpse(trends_runs)
+```
+
+Information is provided on the trends model for each species, including two predictive performance metrics (`rsquared` and `beta0`) that are based on a comparison of actual and estimated trends for a suite of simulations (see Fink et al. 2023 for further details). The columns in the `trends_runs` data frame are as follows:
+
+- `species_code`: the alphanumeric eBird species code uniquely identifying the species.
+- `common_name`: the English common name of the species.
+-  `trends_season`: season that the trend was estimated for: breeding, nonbreeding, or resident.
+- `trends_region`: the geographic region that the trend model was run for. Note that broadly distributed species (e.g. Barn Swallow) will only have trend estimates for a regional subset of their full range.
+- `trends_start_year/trends_end_year`: the start and end years of the trend time period.
+- `trends_start_date/trends_end_date`: the start and end dates (`MM-DD` format) of the season for which the trend was estimated.
+- `rsquared`: R-squared value comparing the actual and estimated trends from the simulations.
+- `beta0`: the slope of a linear model fitting actual vs. estimated trends (`actual ~ estimated`) for the simulations. Positive values of `beta0` indicate that the models are systematically *underestimating* the simulated trend for this species.
+
+Note that some season dates span two calendar years, for example Canvasback has 2011-2021 trends estimates for a non-breeding season defined as December 20 to February 8. In this case, the first season will be December 20, 2011 to February 8, 2012.
+
+```{r}
+#| label: trends-species-crossing
+trends_runs %>% 
+  filter(common_name == "Canvasback") %>% 
+  select(common_name, trends_season,
+         trends_start_year, trends_end_year, 
+         trends_start_date, trends_end_date)
+```
+
+## Downloading data {#sec-trends-download}
+
+Trends data access is granted through the same process as the eBird Status Data Products. If you haven't already requested an API key, consult the relevant section in the [previous lesson](status.qmd#sec-status-access).
+
+Trends data can be downloaded for one or more species using `ebirdst_download_trends()`, where the first argument is a vector of common names, scientific names, or species codes. As with the Status Data Products, trends data will be downloaded to a centralized directory which can be viewed with `ebirdst_data_dir()`. For example, let's download the breeding season trends data for Sage Thrasher.
+
+```{r}
+#| label: trends-download-fake
+#| eval: false
+ebirdst_download_trends("Sage Thrasher")
+```
+
+## Loading data into R {#sec-trends-load}
+
+Once the data are downloaded, the trends data for a set of species, can be loaded into R using the function `load_trends()`. For example, we can load the Sage Thrasher trends estimates we just downloaded with:
+
+```{r}
+#| label: trends-download-load
+trends_sagthr <- load_trends("Sage Thrasher")
+```
+
+Each row corresponds to the trend estimate for a 27 km by 27 km grid cell, identified by the `srd_id` column and with cell center given by the `longitude` and `latitude` coordinates. Columns beginning with `abd_ppy` provide estimates of the percent per year trend in relative abundance and 80% confidence intervals, while those beginning with `abd_trend` provide estimates of the cumulative trend in relative abundance and 80% confidence intervals over the time period. The `abd` column gives the relative abundance estimate for the middle of the trend time period (e.g. 2014 for a 2007-2021 trend). The `start_year/end_year` and `start_date/end_date` columns provide redundant information to that available in `ebirdst_runs`. Specifically for Sage Thrasher we have:
+
+```{r}
+#| label: trends-download-dates
+trends_runs %>% 
+  filter(common_name == "Sage Thrasher") %>% 
+  select(common_name, trends_season,
+         trends_start_year, trends_end_year,
+         trends_start_date, trends_end_date)
+```
+
+This tells us that the trend estimates are for the breeding season (May 17 to July 12) for the period 2012-2022.
+
+::: {.callout-caution icon="false"}
+## Exercise
+
+Look up a species of interest to you. Confirm the species has trends estimates, download the trends data, and load them into R. Take a moment to explore the data frame and ensure you understand all the columns.
+:::
+
+## Conversion to spatial formats {#sec-trends-spatial}
+
+The eBird trends data are stored in a tabular format, where each row gives the trend estimate for a single cell in a 27 km x 27 km equal area grid. For each grid cell, the coordinates (longitude and latitude) are provided for the center of the grid cell. For many applications, an explicitly spatial format is more useful and these coordinates can be use to convert from the tabular format to either a vector or raster format.
+
+### Vector (points) {#sec-trends-spatial-vector}
+
+The tabular trend data can be converted into point vector features for use with the `sf` package using the `sf` function `st_as_sf()`.
+
+```{r}
+#| label: trends-spatial-vector-convert
+trends_sf <- st_as_sf(trends_sagthr, 
+                      coords = c("longitude", "latitude"), 
+                      crs = 4326)
+print(trends_sf)
+```
+
+### Raster {#sec-trends-spatial-raster}
+
+The tabular trend estimates can most easily be converted to raster format for use with the `terra` package using the function `rasterize_trends()`. Any of the columns in the trends data frame can be selected using the `layers` argument and converted into layers in the resulting raster object.
+
+```{r}
+#| label: trends-spatial-raster-convert
+# rasterize the percent per year trend with confidence limits (default)
+ppy_raster <- rasterize_trends(trends_sagthr)
+print(ppy_raster)
+
+# rasterize the cumulative trend estimate
+trends_raster <- rasterize_trends(trends_sagthr, layers = "abd_trend")
+print(trends_sagthr)
+```
+
+A simple map of these data can be produced from the raster data. For example, we'll make a map of percent per year change in relative abundance for Sage Thrasher.
+
+```{r}
+#| label: trends-spatial-raster-map
+# define breaks and palettes similar to those on s&t website
+breaks <- seq(0, 4, by = 1)
+breaks[1] <- 0.001
+breaks[length(breaks)] <- Inf
+breaks <- c(-rev(breaks), breaks)
+pal <- ebirdst_palettes(length(breaks) - 1, type = "trends")
+
+# make a simple map
+plot(ppy_raster[["abd_ppy"]], 
+     col = pal, breaks =  breaks,
+     main = "Trend in relative abundance 2012-2022 [% change per year]",
+     cex.main = 0.75,
+     axes = FALSE, legend = FALSE)
+```
+
+::: callout-tip
+## Tip
+
+The above maps shows the percent per year trend, which is different from the trends maps on the Status and Trends website. These are two different representation of the same data and we can convert between the two using the exponential growth formula. For example, a 1% annual decline equates to a -9.6% cumulative decline from 2012-2022.
+
+```{r}
+#| label: trends-spatial-raster-ppy
+trend_ppy <- -1
+(trend_cumulative <- 100 * ((1 + trend_ppy / 100)^(2022 - 2012) - 1))
+```
+:::
+
+## Uncertainty {#sec-trends-uncertainty}
+
+The model used to estimate trends produces an ensemble of 100 estimates at each location, each based on a random subsample of eBird data. This ensemble of estimates is used to quantify uncertainty in the trends estimates. The estimated trend is the median across the ensemble, and the 80% confidence intervals are the lower 10th and upper 90th percentiles across the ensemble. Those wishing to access estimates from the individual folds making up the ensemble can use `fold_estimates = TRUE` when loading data. These fold-level estimates can be used to quantify uncertainty, for example, when calculating the trend for a given region. For example, let's load the fold-level estimates for Sage Thrasher:
+
+```{r uncertainty}
+#| label: trends-uncertainty
+trends_sagthr_folds <- load_trends("sagthr", fold_estimates = TRUE)
+print(trends_sagthr_folds)
+```
+
+This data frame is much more concise, only giving estimates of the mid-point relative abundance and percent per year trend in relative abundance for each of 100 folds for each grid cell.
+
+## Applications {#sec-trends-applications}
+
+### Regional trends {#sec-trends-applications-regional}
+
+eBird trend estimates are made on a 27 km by 27 km grid, which allows summarization over broader regions such as states or provinces. Since the relative abundance of a species varies throughout its range, we need to weight the mean trend calculation by relative abundance (`abd` in the trends data frame). To quantify uncertainty in the regional trend, we can use the fold-level data to produce 100 distinct estimates of the regional trend, then calculate the median and 80% confidence intervals. As an example, let's calculate the state-level mean percent per year trends in relative abundance for Sage Thrasher.
+
+```{r}
+#| label: trends-applications-regional
+# boundaries of states in the united states
+states <- paste0("https://github.com/ebird/ebirdst-workshop_tws-2023/",
+                 "raw/main/data/boundaries.gpkg") %>% 
+  read_sf(layer = "states")
+
+# convert fold-level trends estimates to sf format
+trends_sagthr_sf <-  st_as_sf(trends_sagthr_folds, 
+                              coords = c("longitude", "latitude"), 
+                              crs = 4326)
+
+# attach state to the fold-level trends data
+trends_sagthr_sf <- st_join(trends_sagthr_sf, states, left = FALSE)
+
+# abundance-weighted average trend by region and fold
+trends_states_folds <- trends_sagthr_sf %>%
+  st_drop_geometry() %>%
+  group_by(state, fold) %>%
+  summarize(abd_ppy = sum(abd * abd_ppy) / sum(abd),
+            .groups = "drop")
+
+# summarize across folds for each state
+trends_states_folds %>% 
+  group_by(state) %>%
+  summarise(abd_ppy_median = median(abd_ppy, na.rm = TRUE),
+            abd_ppy_lower = quantile(abd_ppy, 0.10, na.rm = TRUE),
+            abd_ppy_upper = quantile(abd_ppy, 0.90, na.rm = TRUE),
+            .groups = "drop") %>% 
+  arrange(abd_ppy_median)
+```
+
+Based on these data, Sage Thrasher populations appear to be in decline throughout their entire range; however, some states (e.g. South Dakota) are experiencing much steeper declines than others (e.g. California).
+
+### Multi-species trends {#sec-trends-applications-multi}
+
+In some cases, we may be interested in the trend for an entire community of birds, which can be estimated by calculating the cell-wise mean trend across a suite of species. For example, the eBird Trends Data Products contain trend estimates for three species that breed in [sagebrush](https://en.wikipedia.org/wiki/Sagebrush_steppe): Brewer's Sparrow, Sagebrush Sparrow, and Sage Thrasher. We can calculate an average trend for this group of species, which will provide an estimate of the trend in the sagebrush bird community. First let's look at the model information to ensure all species are modeled for the same region, season, and range of years.
+
+```{r applications-multi-runs}
+#| label: trends-applications-multi-runs
+sagebrush_species <- c("Brewer's Sparrow", "Sagebrush Sparrow", "Sage Thrasher")
+trends_runs %>% 
+  filter(common_name %in% sagebrush_species)
+```
+
+Everything looks good, so we can proceed to compare trends for these species. Next we need to download the trends data for these species. Note that since we've already downloaded the Sage Thrasher data above it won't be re-downloaded here.
+
+```{r}
+#| label: trends-applications-multi-dl
+ebirdst_download_trends(sagebrush_species)
+```
+
+Finally, we can load the trends and calculate the cell-wise mean.
+
+```{r}
+#| label: trends-applications-multi-mean
+trends_sagebrush_species <- load_trends(sagebrush_species)
+
+# calculate mean trend for each cell
+trends_sagebrush <- trends_sagebrush_species %>% 
+  group_by(srd_id, latitude, longitude) %>% 
+  summarize(n_species = n(),
+            abd_ppy = mean(abd_ppy, na.rm = TRUE),
+            .groups = "drop")
+print(trends_sagebrush)
+```

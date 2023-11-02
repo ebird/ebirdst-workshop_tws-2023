@@ -8,9 +8,9 @@ editor_options:
 
 # eBird Status Data Products {#sec-status}
 
-The [eBird Status and Trends](https://science.ebird.org/en/status-and-trends) project uses full-annual cycle machine-learning models combining eBird data with remote-sensing data and accounting for variation in observer behavior and effort to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for 1,113 species globally. Interactive visualizations for these species are available through the [eBird Status and Trends website](https://science.ebird.org/en/status-and-trends) and the eBird Status Data Products are available through the R package [`ebirdst`](https://ebird.github.io/ebirdst/).
+The [eBird Status and Trends](https://science.ebird.org/en/status-and-trends) project uses full-annual cycle machine-learning models combining eBird data with remote-sensing data and accounting for variation in observer behavior and effort to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for `r scales::comma(nrow(ebirdst::ebirdst_runs))` species globally. Interactive visualizations for these species are available through the [eBird Status and Trends website](https://science.ebird.org/en/status-and-trends) and the eBird Status Data Products are available through the R package [`ebirdst`](https://ebird.github.io/ebirdst/).
 
-This workshop will introduce attendees to the eBird Status Data Products and the `ebirdst` R package developed specifically for working with these data. We will introduce attendees to the range of available data, then demonstrate how to download these data products and load them into R for further analysis. Next we'll work through a series of applications. Let's start by loading the packages we'll use throughout this workshop.
+This lesson will introduce attendees to the eBird Status Data Products and the `ebirdst` R package developed specifically for working with these data. We will introduce attendees to the range of available data, then demonstrate how to download these data products and load them into R for further analysis. Next we'll work through a series of applications. Let's start by loading the packages we'll use throughout this lesson
 
 ```{r}
 #| label: status-packages
@@ -48,16 +48,16 @@ ebirdst_download_status("buwtea",
 ```
 :::
 
-## Status and Trends species {#sec-status-species}
+## eBird Status species {#sec-status-species}
 
 The `ebirdst_runs` object is a data frame listing all the available species:
 
-```{r species}
+```{r}
 #| label: status-species-runs
 glimpse(ebirdst_runs)
 ```
 
-If you're working in RStudio, you can use `View()` to interactively explore this data frame. Note that several of the columns at the end of this data frame are related to trends, which we'll cover in the [next section](trends.qmd).
+If you're working in RStudio, you can use `View()` to interactively explore this data frame. Note that several of the columns at the end of this data frame are related to trends, which we'll cover in the [next lesson](trends.qmd).
 
 ### Expert review {#sec-status-review}
 
@@ -346,7 +346,6 @@ For the next application, we'll perform a multi-species site prioritization exer
 
 Relative abundance estimates are impacted by detection rates, which can vary between species. As a results, when comparing eBird Status and Trends data across species, it's critical to always use the percent of population layers, which have been standardized by dividing each cell value by the total relative abundance across all cells.
 :::
-
 
 ```{r}
 #| label: status-applications-prioritization-import

@@ -166,7 +166,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#sec-status-access" id="toc-sec-status-access" class="nav-link active" data-scroll-target="#sec-status-access"><span class="header-section-number">1.1</span> Data access</a></li>
-  <li><a href="#sec-status-species" id="toc-sec-status-species" class="nav-link" data-scroll-target="#sec-status-species"><span class="header-section-number">1.2</span> Status and Trends species</a>
+  <li><a href="#sec-status-species" id="toc-sec-status-species" class="nav-link" data-scroll-target="#sec-status-species"><span class="header-section-number">1.2</span> eBird Status species</a>
   <ul class="collapse">
   <li><a href="#sec-status-review" id="toc-sec-status-review" class="nav-link" data-scroll-target="#sec-status-review"><span class="header-section-number">1.2.1</span> Expert review</a></li>
   </ul></li>
@@ -206,7 +206,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <p>The <a href="https://science.ebird.org/en/status-and-trends">eBird Status and Trends</a> project uses full-annual cycle machine-learning models combining eBird data with remote-sensing data and accounting for variation in observer behavior and effort to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for 1,113 species globally. Interactive visualizations for these species are available through the <a href="https://science.ebird.org/en/status-and-trends">eBird Status and Trends website</a> and the eBird Status Data Products are available through the R package <a href="https://ebird.github.io/ebirdst/"><code>ebirdst</code></a>.</p>
-<p>This workshop will introduce attendees to the eBird Status Data Products and the <code>ebirdst</code> R package developed specifically for working with these data. We will introduce attendees to the range of available data, then demonstrate how to download these data products and load them into R for further analysis. Next we’ll work through a series of applications. Let’s start by loading the packages we’ll use throughout this workshop.</p>
+<p>This lesson will introduce attendees to the eBird Status Data Products and the <code>ebirdst</code> R package developed specifically for working with these data. We will introduce attendees to the range of available data, then demonstrate how to download these data products and load them into R for further analysis. Next we’ll work through a series of applications. Let’s start by loading the packages we’ll use throughout this lesson</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(exactextractr)</span>
@@ -242,7 +242,7 @@ Checkpoint
 </div>
 </section>
 <section id="sec-status-species" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="sec-status-species"><span class="header-section-number">1.2</span> Status and Trends species</h2>
+<h2 data-number="1.2" class="anchored" data-anchor-id="sec-status-species"><span class="header-section-number">1.2</span> eBird Status species</h2>
 <p>The <code>ebirdst_runs</code> object is a data frame listing all the available species:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ebirdst_runs)</span>
@@ -277,7 +277,7 @@ Checkpoint
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rsquared                       &lt;dbl&gt; 0.923, 0.857, 0.881, NA, 0.787, 0.820, …</span></span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ beta0                          &lt;dbl&gt; -0.01392, 0.68942, -0.09267, NA, -0.162…</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>If you’re working in RStudio, you can use <code>View()</code> to interactively explore this data frame. Note that several of the columns at the end of this data frame are related to trends, which we’ll cover in the <a href="./trends.html">next section</a>.</p>
+<p>If you’re working in RStudio, you can use <code>View()</code> to interactively explore this data frame. Note that several of the columns at the end of this data frame are related to trends, which we’ll cover in the <a href="./trends.html">next lesson</a>.</p>
 <section id="sec-status-review" class="level3" data-number="1.2.1">
 <h3 data-number="1.2.1" class="anchored" data-anchor-id="sec-status-review"><span class="header-section-number">1.2.1</span> Expert review</h3>
 <p>All species go through a process of expert human review prior to being released. The <code>ebirdst_runs</code> data frame also contains information from this review process. Reviewers assess each of the four seasons: breeding, non-breeding, pre-breeding migration, and post-breeding migration. Resident (i.e., non-migratory) species are identified by having <code>TRUE</code> in the <code>resident</code> column of <code>ebirdst_runs</code>, and these species are assessed across the whole year rather than seasonally. <code>ebirdst_runs</code> contains two important pieces of information for each season: a <strong>quality</strong> rating and <strong>seasonal dates</strong>.</p>
