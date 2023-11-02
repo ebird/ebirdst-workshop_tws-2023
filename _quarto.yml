@@ -1,5 +1,6 @@
 project:
   type: book
+  output-dir: docs
 
 book:
   title: "eBird Status & Trends Workshop (TWS 2023)"

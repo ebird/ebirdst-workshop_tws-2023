@@ -5,3 +5,5 @@ editor:
 editor_options: 
   chunk_output_type: console
 ---
+
+# eBird Trends Data Products {#sec-trends}
