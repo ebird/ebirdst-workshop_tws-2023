@@ -8,12 +8,8 @@ editor_options:
 
 # Introduction {.unnumbered}
 
-This website contains the notes for a workshop on the [eBird Status and Trends Data Products](https://science.ebird.org/en/status-and-trends) presented at the The Wildlife Society (TWS) Conference in November 2023. The workshop will be divided into two sections:
-
-1. [eBird Status Data Products](status.qmd) 
-2. [eBird Trends Data Products](trends.qmd)
-
-In each section, we cover how to download the data, load it into R, and use it for some common conservation and management applications.
+This website contains the notes for a workshop on the [eBird Status and Trends Data Products](https://science.ebird.org/en/status-and-trends) presented at the The Wildlife Society (TWS) Conference in November 2023. The workshop will be divided into two sections covering the [eBird Status Data Products](status.qmd) 
+and the [eBird Trends Data Products](trends.qmd). In each section, we demonstrate how to download the data, load it into R, and use it for some common conservation and management applications.
 
 ## Setup {#sec-intro-setup}
 

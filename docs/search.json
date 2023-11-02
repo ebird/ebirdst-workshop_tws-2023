@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "eBird Status and Trends",
     "section": "",
-    "text": "Introduction\nThis website contains the notes for a workshop on the eBird Status and Trends Data Products presented at the The Wildlife Society (TWS) Conference in November 2023. The workshop will be divided into two sections:\nIn each section, we cover how to download the data, load it into R, and use it for some common conservation and management applications."
+    "text": "Introduction\nThis website contains the notes for a workshop on the eBird Status and Trends Data Products presented at the The Wildlife Society (TWS) Conference in November 2023. The workshop will be divided into two sections covering the eBird Status Data Products and the eBird Trends Data Products. In each section, we demonstrate how to download the data, load it into R, and use it for some common conservation and management applications."
   },
   {
     "objectID": "index.html#sec-intro-setup",
