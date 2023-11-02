@@ -8,9 +8,9 @@ editor_options:
 
 # eBird Status Data Products {#sec-status}
 
-The [eBird Status and Trends](https://science.ebird.org/en/status-and-trends) project uses full-annual cycle machine-learning models combining eBird data with remote-sensing data and accounting for variation in observer behavior and effort to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for `r scales::comma(nrow(ebirdst::ebirdst_runs))` species globally. Interactive visualizations for these species are available through the [eBird Status and Trends website](https://science.ebird.org/en/status-and-trends) and the eBird Status Data Products are available through the R package [`ebirdst`](https://ebird.github.io/ebirdst/).
+The [eBird Status and Trends](https://science.ebird.org/en/status-and-trends) project uses full-annual cycle machine-learning models combining eBird observations with remote-sensing data, and accounting for variation in observer behavior and effort, to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for `r scales::comma(nrow(ebirdst::ebirdst_runs))` species globally. Interactive visualizations for these species are available through the [eBird Status and Trends website](https://science.ebird.org/en/status-and-trends) and the eBird Status Data Products are available through the R package [`ebirdst`](https://ebird.github.io/ebirdst/).
 
-This lesson will introduce attendees to the eBird Status Data Products and the `ebirdst` R package developed specifically for working with these data. We will introduce attendees to the range of available data, then demonstrate how to download these data products and load them into R for further analysis. Next we'll work through a series of applications. Let's start by loading the packages we'll use throughout this lesson
+This lesson will introduce you to the eBird Status Data Products and the `ebirdst` R package developed specifically for working with these data. We will describe to the range of available data products, then demonstrate how to download these data products and load them into R for further analysis. Next we'll work through a series of applications. Let's start by loading the packages we'll use throughout this lesson.
 
 ```{r}
 #| label: status-packages
@@ -24,7 +24,7 @@ library(ebirdst)
 
 ## Data access {#sec-status-access}
 
-Access to the eBird Status Data Products is granted through an Access Request Form at: <https://ebird.org/st/request>. The terms of use have been desiged to be quite permissive in many cases, particularly academic and research use. After reading the [eBird Status and Trends Data Products Terms of Use](https://ebird.org/science/status-and-trends/st-data-access-terms-of-use/) and filling out the [Access Request Form](https://ebird.org/st/request) you will be provided with an alphanumeric access key. To store the access key so it can be accessed by R and the `ebirdst` package, run the following (replacing `"XXXXXXXXX"` with your actual key):
+Access to the eBird Status Data Products is granted through an Access Request Form at: <https://ebird.org/st/request>. The terms of use have been desiged to be quite permissive in many cases, particularly academic and research use. After reading the [eBird Status and Trends Data Products Terms of Use](https://science.ebird.org/en/status-and-trends/products-access-terms-of-use) and filling out the [Access Request Form](https://ebird.org/st/request) you will be provided with an alphanumeric access key. To store the access key so it can be accessed by R and the `ebirdst` package, run the following (replacing `"XXXXXXXXX"` with your actual key):
 
 ```{r}
 #| label: status-access-key
@@ -42,7 +42,7 @@ To ensure your data access key is working, attempt run the following code, which
 ```{r}
 #| label: status-access-sol
 #| eval: false
-ebirdst_download_status("buwtea", 
+ebirdst_download_status("abetow", 
                         pattern = "abundance_median_27km_2022", 
                         force = TRUE)
 ```
@@ -61,9 +61,9 @@ If you're working in RStudio, you can use `View()` to interactively explore this
 
 ### Expert review {#sec-status-review}
 
-All species go through a process of expert human review prior to being released. The `ebirdst_runs` data frame also contains information from this review process. Reviewers assess each of the four seasons: breeding, non-breeding, pre-breeding migration, and post-breeding migration. Resident (i.e., non-migratory) species are identified by having `TRUE` in the `resident` column of `ebirdst_runs`, and these species are assessed across the whole year rather than seasonally. `ebirdst_runs` contains two important pieces of information for each season: a **quality** rating and **seasonal dates**.
+All species go through a process of expert human review prior to being released. The `ebirdst_runs` data frame also contains information from this review process. Reviewers assess each of the four seasons: breeding, non-breeding, pre-breeding migration, and post-breeding migration. Resident (i.e. non-migratory) species are identified by having `TRUE` in the `is_resident` column of `ebirdst_runs`, and these species are assessed across the whole year rather than seasonally. `ebirdst_runs` contains two important pieces of information for each season: a **quality** rating and **seasonal dates**.
 
-The **seasonal dates** define the weeks that fall within each season; the relative abundance estimates for these weeks get averaged to produce the seasonal relative abundance maps on the Status and Trends website. Breeding and non-breeding season dates are defined for each species as the weeks during those seasons when the species' population does not move. For this reason, these seasons are also described as stationary periods. Migration periods are defined as the periods of movement between the stationary non-breeding and breeding seasons. Note that for many species these migratory periods include not only movement from breeding grounds to non-breeding grounds, but also post-breeding dispersal, molt migration, and other movements.
+The **seasonal dates** define the weeks that fall within each season; the relative abundance estimates for these weeks get averaged to produce the seasonal relative abundance maps on the Status and Trends website. Breeding and non-breeding season dates are defined for each species as the weeks during those seasons when the species' population does not move. For this reason, these seasons are also described as stationary periods. Migration periods are defined as the periods of movement between the stationary non-breeding and breeding seasons. Note that for many species these migratory periods include not only movement from the breeding grounds to the non-breeding grounds, but also post-breeding dispersal, molt migration, and other movements.
 
 Reviewers also examine the model estimates for each season to assess the amount of extrapolation or omission present in the model, and assign an associated **quality** rating ranging from 0 (lowest quality) to 3 (highest quality). Extrapolation refers to cases where the model predicts occurrence where the species is known to be absent, while omission refers to the model failing to predict occurrence where a species is known to be present.
 
@@ -94,17 +94,17 @@ ebirdst_runs %>%
 
 ## Downloading data {#sec-status-download}
 
-The function `ebirdst_download_status()` downloads eBird Status Data Products for a single species given a species name (common name, scientific name, or species code). For example, to download the data for Blue-winged Teal use:
+The function `ebirdst_download_status()` downloads eBird Status Data Products for a single species, it takes a species name (common name, scientific name, or species code) as its first argument. For example, to download the data for Blue-winged Teal use:
 
 ```{r}
 #| label: status-download-fake
 #| eval: false
-ebirdst_download_status(species = "Blue-winged Teal")
+ebirdst_download_status("Blue-winged Teal")
 ```
 
 There are a wide variety of data products available for download via `ebirdst_download_status()`; however, the default behavior of this function is to only download the most commonly used data products: weekly and seasonal estimates of relative abundance. Consult the help for `ebirdst_download_status()` for details on downloading other data products, for example, range polygons or estimates of occurrence rate.
 
-`ebirdst` uses a central location on your computer to download and store data. As a data user, the intention is for you to always access eBird Status and Trends Data products through `ebirdst` rather than interacting with the data directly. You can see where the data are stored with `ebirdst_data_dir()` and you can change the default download directory by setting the environment variable `EBIRDST_DATA_DIR`, for example by calling `usethis::edit_r_environ()` and adding a line such as `EBIRDST_DATA_DIR=/custom/download/directory/`.
+`ebirdst` uses a central location on your computer to download and store data. As a data user, the intention is for you to always access eBird Status and Trends Data Products through `ebirdst` rather than interacting with the data directly. You can see where the data are stored with `ebirdst_data_dir()` and you can change the default download directory by setting the environment variable `EBIRDST_DATA_DIR`, for example by calling `usethis::edit_r_environ()` and adding a line such as `EBIRDST_DATA_DIR=/custom/download/directory/`.
 
 ## Loading data in R {#sec-status-load}
 
@@ -114,24 +114,30 @@ In this workshop, we'll focus on the raster data products, consisting of estimat
 
 The core raster data products are the weekly estimates of occurrence, count, relative abundance, and proportion of population. All estimates are the median expected value for a 2 km, 1 hour eBird Traveling Count by an expert eBird observer at the optimal time of day and for optimal weather conditions to observe the given species.
 
--   **Occurrence** `occurrence`: the expected probability of encountering a species.
--   **Count** `count`: the expected count of a species, conditional on its occurrence at the given location.
--   **Relative abundance** `abundance`: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively.
--   **Proportion of population** `proportion-population`: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.
+-   **Occurrence**: the expected probability of encountering a species.
+-   **Count**: the expected count of a species, conditional on its occurrence at the given location.
+-   **Relative abundance**: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively.
+-   **Proportion of population**: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.
 
-All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three resolutions are:
+All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three available resolutions are:
 
--   High resolution (`3km`): the native 3 km resolution data
--   Medium resolution (`9km`): data aggregated by a factor of 3 in each direction resulting in a resolution of 9 km
--   Low resolution (`27km`): data aggregated by a factor of 9 in each direction resulting in a resolution of 27 km
+-   High resolution (3km): the native 3 km resolution data
+-   Medium resolution (9km): data aggregated by a factor of 3 in each direction resulting in a resolution of 9 km
+-   Low resolution (27km): data aggregated by a factor of 9 in each direction resulting in a resolution of 27 km
 
-The first argument to `load_raster()` is the species (common name, scientific name, or species code) and teh remaining arguments specify which product to load. For example, we can load the relative abundance estimates with:
+The first argument to `load_raster()` is the species (common name, scientific name, or species code) and the remaining arguments specify which product to load. For example, we can load the relative abundance estimates with:
 
 ```{r}
 #| label: status-load-weekly-abd
 abd_median <- load_raster("buwtea", product = "abundance")
 print(abd_median)
 ```
+
+::: callout-important
+## Checkpoint
+
+Take a moment to explore the output of `print(abd_median)` to see what information is provided about the raster. You should be able to identify the number of layers (52), the resolution (2962 meters), and coordinate reference system (a sinusoidal equal area projection).
+:::
 
 We often refer to these raster objects as "weekly cubes" (e.g. the "weekly abundance cube"). Notice that the cubes contains 52 layers, corresponding to the weeks of the year. The layer names are the dates associated with the mid-point of each week.
 
@@ -140,7 +146,7 @@ We often refer to these raster objects as "weekly cubes" (e.g. the "weekly abund
 as.Date(names(abd_median))
 ```
 
-To load the upper and lower abundance confidence intervals for relative abundance, we can use the `metric` argument.
+To load the upper and lower confidence intervals for relative abundance, we can use the `metric` argument.
 
 ```{r}
 #| label: status-load-weekly-ci
@@ -198,12 +204,12 @@ abd_fy_max <- load_raster("buwtea",
                           metric = "max")
 ```
 
-## Exploring the raster data {#sec-status-explore}
+## Working with raster data {#sec-status-raster}
 
 Let's load the weekly and seasonal relative abundance cubes and use them to demonstrate some basic raster operations with the data. We'll use the 9 km estimates for demonstration since they're faster to process, but in practice you may want to use the 3 km resolution data for increased precision.
 
 ```{r}
-#| label: status-explore-load
+#| label: status-raster-load
 abd_weekly <- load_raster("buwtea", product = "abundance", resolution = "9km")
 abd_seasonal <- load_raster("buwtea", product = "abundance", 
                             period = "seasonal", resolution = "9km")
@@ -212,7 +218,7 @@ abd_seasonal <- load_raster("buwtea", product = "abundance",
 These cubes can easily be subset to a single week or season.
 
 ```{r}
-#| label: status-explore-subset
+#| label: status-raster-subset
 # week of may 17
 abd_weekly[["2022-05-17"]]
 # breeding season
@@ -222,7 +228,7 @@ abd_seasonal[["breeding"]]
 We can also subset the weekly cube to a range of weeks. For example, let's subset to only the estimates for weeks in May, then take the average across the weeks.
 
 ```{r}
-#| label: status-explore-mean
+#| label: status-raster-mean
 # determine which dates we want to include
 week_dates <- as.Date(names(abd_weekly))
 start_date <- as.Date("2022-05-01")
@@ -239,16 +245,15 @@ mean(abd_weekly_may, na.rm = TRUE)
 Making a simple map of the data will produce unexpected results. For example, let's map the non-breeding season relative abundance for Blue-winged Teal.
 
 ```{r}
-#| label: status-explore-map
+#| label: status-raster-map
 plot(abd_seasonal[["nonbreeding"]])
 ```
 
-All eBird Status Data Products are provided for the entire globe in an esoteric Sinusoidal equal area projection not designed for mapping. Also, notice that some areas, such as the Amazon Basin and High Arctic, have missing values (white in the map) indicating that there was insufficient data to make a prediction in the region. Other areas, such as Central America and Western Europe, have sufficient data to predict that the species is absent (light grey on the map). To produce a more useful map, we can crop and mask the data to a region of interest. For example, let's spatially subset the non-breeding season relative abundance raster for Blue-winged Teal data to the footprint of the Lower Mississippi Valley Joint Venture (LMVJV).
+All eBird Status Data Products are provided for the entire globe in an esoteric Sinusoidal equal area projection designed for analysis but not mapping. Also, notice that some areas, such as the Amazon Basin and High Arctic, have missing values (white in the map) indicating that there was insufficient data to make a prediction in the region. Other areas, such as Central America and Western Europe, have sufficient data to predict that the species is absent (light grey on the map). To produce a more useful map, we can crop and mask the data to a region of interest. For example, let's spatially subset the non-breeding season relative abundance raster for Blue-winged Teal data to the footprint of the Lower Mississippi Valley Joint Venture (LMVJV).
 
 ```{r}
-#| label: status-explore-mvjv
-# polygon for the lower mississipi valley joint venture footprint
-# polygon for the lower mississipi valley joint venture footprint
+#| label: status-raster-mvjv
+# polygon for the lower mississippi valley joint venture footprint
 lmv_boundary <- paste0("https://github.com/ebird/ebirdst-workshop_tws-2023/",
                        "raw/main/data/boundaries.gpkg") %>% 
   read_sf(layer = "lmvjv") %>% 
@@ -272,7 +277,7 @@ plot(st_geometry(states), add = TRUE)
 ::: callout-important
 ## Checkpoint
 
-Let's take a break before proceeding onto some more realistic applications of the eBird Status data products. Make sure you're comfortable loading the data into R and performing some of the basic operations.
+Let's take a break before moving on to some more realistic applications of the eBird Status Data Products. Make sure you're comfortable loading the data into R and performing some of the basic operations.
 :::
 
 ## Applications {#sec-status-applications}
@@ -373,7 +378,7 @@ proportion_population <- rast(proportion_population)
 print(proportion_population)
 ```
 
-The goal of this exercise is to simultaneously prioritize sites across all four species. To do this, we can take calculate the cell-wise mean proportion of population across the species, which results in a single layer that acts as a proxy for importance.
+The goal of this exercise is to simultaneously prioritize sites across all four species. To do this, we calculate the cell-wise mean proportion of population across the species, which results in a single layer that acts as a proxy for importance.
 
 ```{r}
 #| label: status-applications-prioritization-importance
@@ -383,7 +388,7 @@ importance <- mean(proportion_population, na.rm = TRUE)
 # plot the square root of importance since the data are right skewed
 par(mar = c(0.25, 0.25, 0.25, 0.25))
 plot(sqrt(importance), axes = FALSE)
-plot(states, add = TRUE)
+plot(st_geometry(states), add = TRUE)
 ```
 
 The absolute numbers in this map are challenging to interpret (they're the mean proportion of the population across the four species in each cell). Instead, the values should be interpreted in relative terms, giving the relative importance of each cell for this set of four species.
@@ -406,5 +411,5 @@ Finally, let's make a basic map showing the selected sites in green.
 #| label: status-applications-prioritization-maps
 par(mar = c(0.25, 0.25, 0.25, 0.25))
 plot(top_cells, axes = FALSE, legend = FALSE)
-plot(states, add = TRUE)
+plot(st_geometry(states), add = TRUE)
 ```

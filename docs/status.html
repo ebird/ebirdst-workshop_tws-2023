@@ -176,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sec-status-load-weekly" id="toc-sec-status-load-weekly" class="nav-link" data-scroll-target="#sec-status-load-weekly"><span class="header-section-number">1.4.1</span> Weekly raster estimates</a></li>
   <li><a href="#sec-status-load-seasonal" id="toc-sec-status-load-seasonal" class="nav-link" data-scroll-target="#sec-status-load-seasonal"><span class="header-section-number">1.4.2</span> Seasonal raster estimates</a></li>
   </ul></li>
-  <li><a href="#sec-status-explore" id="toc-sec-status-explore" class="nav-link" data-scroll-target="#sec-status-explore"><span class="header-section-number">1.5</span> Exploring the raster data</a></li>
+  <li><a href="#sec-status-raster" id="toc-sec-status-raster" class="nav-link" data-scroll-target="#sec-status-raster"><span class="header-section-number">1.5</span> Working with raster data</a></li>
   <li><a href="#sec-status-applications" id="toc-sec-status-applications" class="nav-link" data-scroll-target="#sec-status-applications"><span class="header-section-number">1.6</span> Applications</a>
   <ul class="collapse">
   <li><a href="#sec-status-applications-trajectories" id="toc-sec-status-applications-trajectories" class="nav-link" data-scroll-target="#sec-status-applications-trajectories"><span class="header-section-number">1.6.1</span> Trajectories</a></li>
@@ -205,8 +205,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>The <a href="https://science.ebird.org/en/status-and-trends">eBird Status and Trends</a> project uses full-annual cycle machine-learning models combining eBird data with remote-sensing data and accounting for variation in observer behavior and effort to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for 1,113 species globally. Interactive visualizations for these species are available through the <a href="https://science.ebird.org/en/status-and-trends">eBird Status and Trends website</a> and the eBird Status Data Products are available through the R package <a href="https://ebird.github.io/ebirdst/"><code>ebirdst</code></a>.</p>
-<p>This lesson will introduce attendees to the eBird Status Data Products and the <code>ebirdst</code> R package developed specifically for working with these data. We will introduce attendees to the range of available data, then demonstrate how to download these data products and load them into R for further analysis. Next we’ll work through a series of applications. Let’s start by loading the packages we’ll use throughout this lesson</p>
+<p>The <a href="https://science.ebird.org/en/status-and-trends">eBird Status and Trends</a> project uses full-annual cycle machine-learning models combining eBird observations with remote-sensing data, and accounting for variation in observer behavior and effort, to produce high resolution, weekly estimates of range boundaries, occurrence rate, and relative abundance of bird species. The latest version, with estimates for the year 2022, includes results for 1,113 species globally. Interactive visualizations for these species are available through the <a href="https://science.ebird.org/en/status-and-trends">eBird Status and Trends website</a> and the eBird Status Data Products are available through the R package <a href="https://ebird.github.io/ebirdst/"><code>ebirdst</code></a>.</p>
+<p>This lesson will introduce you to the eBird Status Data Products and the <code>ebirdst</code> R package developed specifically for working with these data. We will describe to the range of available data products, then demonstrate how to download these data products and load them into R for further analysis. Next we’ll work through a series of applications. Let’s start by loading the packages we’ll use throughout this lesson.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(exactextractr)</span>
@@ -217,7 +217,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <section id="sec-status-access" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="sec-status-access"><span class="header-section-number">1.1</span> Data access</h2>
-<p>Access to the eBird Status Data Products is granted through an Access Request Form at: <a href="https://ebird.org/st/request" class="uri">https://ebird.org/st/request</a>. The terms of use have been desiged to be quite permissive in many cases, particularly academic and research use. After reading the <a href="https://ebird.org/science/status-and-trends/st-data-access-terms-of-use/">eBird Status and Trends Data Products Terms of Use</a> and filling out the <a href="https://ebird.org/st/request">Access Request Form</a> you will be provided with an alphanumeric access key. To store the access key so it can be accessed by R and the <code>ebirdst</code> package, run the following (replacing <code>"XXXXXXXXX"</code> with your actual key):</p>
+<p>Access to the eBird Status Data Products is granted through an Access Request Form at: <a href="https://ebird.org/st/request" class="uri">https://ebird.org/st/request</a>. The terms of use have been desiged to be quite permissive in many cases, particularly academic and research use. After reading the <a href="https://science.ebird.org/en/status-and-trends/products-access-terms-of-use">eBird Status and Trends Data Products Terms of Use</a> and filling out the <a href="https://ebird.org/st/request">Access Request Form</a> you will be provided with an alphanumeric access key. To store the access key so it can be accessed by R and the <code>ebirdst</code> package, run the following (replacing <code>"XXXXXXXXX"</code> with your actual key):</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_ebirdst_access_key</span>(<span class="st">"XXXXXXXXX"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -234,7 +234,7 @@ Checkpoint
 <div class="callout-body-container callout-body">
 <p>To ensure your data access key is working, attempt run the following code, which will two small files. Speak to the instructor if this doesn’t work.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ebirdst_download_status</span>(<span class="st">"buwtea"</span>, </span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ebirdst_download_status</span>(<span class="st">"abetow"</span>, </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">pattern =</span> <span class="st">"abundance_median_27km_2022"</span>, </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">force =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -280,8 +280,8 @@ Checkpoint
 <p>If you’re working in RStudio, you can use <code>View()</code> to interactively explore this data frame. Note that several of the columns at the end of this data frame are related to trends, which we’ll cover in the <a href="./trends.html">next lesson</a>.</p>
 <section id="sec-status-review" class="level3" data-number="1.2.1">
 <h3 data-number="1.2.1" class="anchored" data-anchor-id="sec-status-review"><span class="header-section-number">1.2.1</span> Expert review</h3>
-<p>All species go through a process of expert human review prior to being released. The <code>ebirdst_runs</code> data frame also contains information from this review process. Reviewers assess each of the four seasons: breeding, non-breeding, pre-breeding migration, and post-breeding migration. Resident (i.e., non-migratory) species are identified by having <code>TRUE</code> in the <code>resident</code> column of <code>ebirdst_runs</code>, and these species are assessed across the whole year rather than seasonally. <code>ebirdst_runs</code> contains two important pieces of information for each season: a <strong>quality</strong> rating and <strong>seasonal dates</strong>.</p>
-<p>The <strong>seasonal dates</strong> define the weeks that fall within each season; the relative abundance estimates for these weeks get averaged to produce the seasonal relative abundance maps on the Status and Trends website. Breeding and non-breeding season dates are defined for each species as the weeks during those seasons when the species’ population does not move. For this reason, these seasons are also described as stationary periods. Migration periods are defined as the periods of movement between the stationary non-breeding and breeding seasons. Note that for many species these migratory periods include not only movement from breeding grounds to non-breeding grounds, but also post-breeding dispersal, molt migration, and other movements.</p>
+<p>All species go through a process of expert human review prior to being released. The <code>ebirdst_runs</code> data frame also contains information from this review process. Reviewers assess each of the four seasons: breeding, non-breeding, pre-breeding migration, and post-breeding migration. Resident (i.e.&nbsp;non-migratory) species are identified by having <code>TRUE</code> in the <code>is_resident</code> column of <code>ebirdst_runs</code>, and these species are assessed across the whole year rather than seasonally. <code>ebirdst_runs</code> contains two important pieces of information for each season: a <strong>quality</strong> rating and <strong>seasonal dates</strong>.</p>
+<p>The <strong>seasonal dates</strong> define the weeks that fall within each season; the relative abundance estimates for these weeks get averaged to produce the seasonal relative abundance maps on the Status and Trends website. Breeding and non-breeding season dates are defined for each species as the weeks during those seasons when the species’ population does not move. For this reason, these seasons are also described as stationary periods. Migration periods are defined as the periods of movement between the stationary non-breeding and breeding seasons. Note that for many species these migratory periods include not only movement from the breeding grounds to the non-breeding grounds, but also post-breeding dispersal, molt migration, and other movements.</p>
 <p>Reviewers also examine the model estimates for each season to assess the amount of extrapolation or omission present in the model, and assign an associated <strong>quality</strong> rating ranging from 0 (lowest quality) to 3 (highest quality). Extrapolation refers to cases where the model predicts occurrence where the species is known to be absent, while omission refers to the model failing to predict occurrence where a species is known to be present.</p>
 <p>A rating of 0 implies this season failed review and model results should not be used at all for this period. Ratings of 1-3 correspond to a gradient of more to less extrapolation and/or omission, and we often use a traffic light analogy when referring to them:</p>
 <ol type="1">
@@ -357,12 +357,12 @@ Solution
 </section>
 <section id="sec-status-download" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="sec-status-download"><span class="header-section-number">1.3</span> Downloading data</h2>
-<p>The function <code>ebirdst_download_status()</code> downloads eBird Status Data Products for a single species given a species name (common name, scientific name, or species code). For example, to download the data for Blue-winged Teal use:</p>
+<p>The function <code>ebirdst_download_status()</code> downloads eBird Status Data Products for a single species, it takes a species name (common name, scientific name, or species code) as its first argument. For example, to download the data for Blue-winged Teal use:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ebirdst_download_status</span>(<span class="at">species =</span> <span class="st">"Blue-winged Teal"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ebirdst_download_status</span>(<span class="st">"Blue-winged Teal"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There are a wide variety of data products available for download via <code>ebirdst_download_status()</code>; however, the default behavior of this function is to only download the most commonly used data products: weekly and seasonal estimates of relative abundance. Consult the help for <code>ebirdst_download_status()</code> for details on downloading other data products, for example, range polygons or estimates of occurrence rate.</p>
-<p><code>ebirdst</code> uses a central location on your computer to download and store data. As a data user, the intention is for you to always access eBird Status and Trends Data products through <code>ebirdst</code> rather than interacting with the data directly. You can see where the data are stored with <code>ebirdst_data_dir()</code> and you can change the default download directory by setting the environment variable <code>EBIRDST_DATA_DIR</code>, for example by calling <code>usethis::edit_r_environ()</code> and adding a line such as <code>EBIRDST_DATA_DIR=/custom/download/directory/</code>.</p>
+<p><code>ebirdst</code> uses a central location on your computer to download and store data. As a data user, the intention is for you to always access eBird Status and Trends Data Products through <code>ebirdst</code> rather than interacting with the data directly. You can see where the data are stored with <code>ebirdst_data_dir()</code> and you can change the default download directory by setting the environment variable <code>EBIRDST_DATA_DIR</code>, for example by calling <code>usethis::edit_r_environ()</code> and adding a line such as <code>EBIRDST_DATA_DIR=/custom/download/directory/</code>.</p>
 </section>
 <section id="sec-status-load" class="level2" data-number="1.4">
 <h2 data-number="1.4" class="anchored" data-anchor-id="sec-status-load"><span class="header-section-number">1.4</span> Loading data in R</h2>
@@ -371,18 +371,18 @@ Solution
 <h3 data-number="1.4.1" class="anchored" data-anchor-id="sec-status-load-weekly"><span class="header-section-number">1.4.1</span> Weekly raster estimates</h3>
 <p>The core raster data products are the weekly estimates of occurrence, count, relative abundance, and proportion of population. All estimates are the median expected value for a 2 km, 1 hour eBird Traveling Count by an expert eBird observer at the optimal time of day and for optimal weather conditions to observe the given species.</p>
 <ul>
-<li><strong>Occurrence</strong> <code>occurrence</code>: the expected probability of encountering a species.</li>
-<li><strong>Count</strong> <code>count</code>: the expected count of a species, conditional on its occurrence at the given location.</li>
-<li><strong>Relative abundance</strong> <code>abundance</code>: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively.</li>
-<li><strong>Proportion of population</strong> <code>proportion-population</code>: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.</li>
+<li><strong>Occurrence</strong>: the expected probability of encountering a species.</li>
+<li><strong>Count</strong>: the expected count of a species, conditional on its occurrence at the given location.</li>
+<li><strong>Relative abundance</strong>: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively.</li>
+<li><strong>Proportion of population</strong>: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.</li>
 </ul>
-<p>All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three resolutions are:</p>
+<p>All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three available resolutions are:</p>
 <ul>
-<li>High resolution (<code>3km</code>): the native 3 km resolution data</li>
-<li>Medium resolution (<code>9km</code>): data aggregated by a factor of 3 in each direction resulting in a resolution of 9 km</li>
-<li>Low resolution (<code>27km</code>): data aggregated by a factor of 9 in each direction resulting in a resolution of 27 km</li>
+<li>High resolution (3km): the native 3 km resolution data</li>
+<li>Medium resolution (9km): data aggregated by a factor of 3 in each direction resulting in a resolution of 9 km</li>
+<li>Low resolution (27km): data aggregated by a factor of 9 in each direction resulting in a resolution of 27 km</li>
 </ul>
-<p>The first argument to <code>load_raster()</code> is the species (common name, scientific name, or species code) and teh remaining arguments specify which product to load. For example, we can load the relative abundance estimates with:</p>
+<p>The first argument to <code>load_raster()</code> is the species (common name, scientific name, or species code) and the remaining arguments specify which product to load. For example, we can load the relative abundance estimates with:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>abd_median <span class="ot">&lt;-</span> <span class="fu">load_raster</span>(<span class="st">"buwtea"</span>, <span class="at">product =</span> <span class="st">"abundance"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(abd_median)</span>
@@ -395,6 +395,19 @@ Solution
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; names       : 2022-01-04, 2022-01-11, 2022-01-18, 2022-01-25, 2022-02-01, 2022-02-08, ... </span></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; min values  :          0,          0,          0,          0,          0,          0, ... </span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; max values  :        691,        961,        694,       1029,        930,        876, ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checkpoint
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Take a moment to explore the output of <code>print(abd_median)</code> to see what information is provided about the raster. You should be able to identify the number of layers (52), the resolution (2962 meters), and coordinate reference system (a sinusoidal equal area projection).</p>
+</div>
 </div>
 <p>We often refer to these raster objects as “weekly cubes” (e.g.&nbsp;the “weekly abundance cube”). Notice that the cubes contains 52 layers, corresponding to the weeks of the year. The layer names are the dates associated with the mid-point of each week.</p>
 <div class="cell" data-layout-align="center">
@@ -411,7 +424,7 @@ Solution
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [46] "2022-11-15" "2022-11-22" "2022-11-29" "2022-12-06" "2022-12-13"</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [51] "2022-12-20" "2022-12-27"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>To load the upper and lower abundance confidence intervals for relative abundance, we can use the <code>metric</code> argument.</p>
+<p>To load the upper and lower confidence intervals for relative abundance, we can use the <code>metric</code> argument.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>abd_lower <span class="ot">&lt;-</span> <span class="fu">load_raster</span>(<span class="st">"buwtea"</span>, <span class="at">product =</span> <span class="st">"abundance"</span>, <span class="at">metric =</span> <span class="st">"lower"</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>abd_upper <span class="ot">&lt;-</span> <span class="fu">load_raster</span>(<span class="st">"buwtea"</span>, <span class="at">product =</span> <span class="st">"abundance"</span>, <span class="at">metric =</span> <span class="st">"upper"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -430,7 +443,7 @@ Exercise
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -439,7 +452,7 @@ Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>prop_pop <span class="ot">&lt;-</span> <span class="fu">load_raster</span>(<span class="st">"buwtea"</span>, </span>
@@ -495,8 +508,8 @@ Solution
 </div>
 </section>
 </section>
-<section id="sec-status-explore" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="sec-status-explore"><span class="header-section-number">1.5</span> Exploring the raster data</h2>
+<section id="sec-status-raster" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="sec-status-raster"><span class="header-section-number">1.5</span> Working with raster data</h2>
 <p>Let’s load the weekly and seasonal relative abundance cubes and use them to demonstrate some basic raster operations with the data. We’ll use the 9 km estimates for demonstration since they’re faster to process, but in practice you may want to use the 3 km resolution data for increased precision.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>abd_weekly <span class="ot">&lt;-</span> <span class="fu">load_raster</span>(<span class="st">"buwtea"</span>, <span class="at">product =</span> <span class="st">"abundance"</span>, <span class="at">resolution =</span> <span class="st">"9km"</span>)</span>
@@ -557,37 +570,36 @@ Solution
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="status_files/figure-html/status-explore-map-1.png" class="img-fluid figure-img"></p>
+<p><img src="status_files/figure-html/status-raster-map-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>All eBird Status Data Products are provided for the entire globe in an esoteric Sinusoidal equal area projection not designed for mapping. Also, notice that some areas, such as the Amazon Basin and High Arctic, have missing values (white in the map) indicating that there was insufficient data to make a prediction in the region. Other areas, such as Central America and Western Europe, have sufficient data to predict that the species is absent (light grey on the map). To produce a more useful map, we can crop and mask the data to a region of interest. For example, let’s spatially subset the non-breeding season relative abundance raster for Blue-winged Teal data to the footprint of the Lower Mississippi Valley Joint Venture (LMVJV).</p>
+<p>All eBird Status Data Products are provided for the entire globe in an esoteric Sinusoidal equal area projection designed for analysis but not mapping. Also, notice that some areas, such as the Amazon Basin and High Arctic, have missing values (white in the map) indicating that there was insufficient data to make a prediction in the region. Other areas, such as Central America and Western Europe, have sufficient data to predict that the species is absent (light grey on the map). To produce a more useful map, we can crop and mask the data to a region of interest. For example, let’s spatially subset the non-breeding season relative abundance raster for Blue-winged Teal data to the footprint of the Lower Mississippi Valley Joint Venture (LMVJV).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># polygon for the lower mississipi valley joint venture footprint</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># polygon for the lower mississipi valley joint venture footprint</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>lmv_boundary <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://github.com/ebird/ebirdst-workshop_tws-2023/"</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"raw/main/data/boundaries.gpkg"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sf</span>(<span class="at">layer =</span> <span class="st">"lmvjv"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(abd_seasonal))</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># state boundary polygons for mapping</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://github.com/ebird/ebirdst-workshop_tws-2023/"</span>,</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"raw/main/data/boundaries.gpkg"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sf</span>(<span class="at">layer =</span> <span class="st">"states"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(abd_seasonal))</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># crop and mask the breeding season relative abundance raster</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>abd_breeding_lmv <span class="ot">&lt;-</span> <span class="fu">crop</span>(abd_seasonal[[<span class="st">"nonbreeding"</span>]], lmv_boundary) <span class="sc">%&gt;%</span> </span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mask</span>(lmv_boundary)</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co"># map</span></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(abd_breeding_lmv, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(states), <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># polygon for the lower mississippi valley joint venture footprint</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>lmv_boundary <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://github.com/ebird/ebirdst-workshop_tws-2023/"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"raw/main/data/boundaries.gpkg"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sf</span>(<span class="at">layer =</span> <span class="st">"lmvjv"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(abd_seasonal))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># state boundary polygons for mapping</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>states <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"https://github.com/ebird/ebirdst-workshop_tws-2023/"</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"raw/main/data/boundaries.gpkg"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sf</span>(<span class="at">layer =</span> <span class="st">"states"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(abd_seasonal))</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"># crop and mask the breeding season relative abundance raster</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>abd_breeding_lmv <span class="ot">&lt;-</span> <span class="fu">crop</span>(abd_seasonal[[<span class="st">"nonbreeding"</span>]], lmv_boundary) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mask</span>(lmv_boundary)</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co"># map</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(abd_breeding_lmv, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(states), <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="status_files/figure-html/status-explore-mvjv-1.png" class="img-fluid figure-img"></p>
+<p><img src="status_files/figure-html/status-raster-mvjv-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -602,7 +614,7 @@ Checkpoint
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Let’s take a break before proceeding onto some more realistic applications of the eBird Status data products. Make sure you’re comfortable loading the data into R and performing some of the basic operations.</p>
+<p>Let’s take a break before moving on to some more realistic applications of the eBird Status Data Products. Make sure you’re comfortable loading the data into R and performing some of the basic operations.</p>
 </div>
 </div>
 </section>
@@ -726,7 +738,7 @@ Tip
 <span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; min values  : 0.000000, 0.00000, 0.000000, 0.00000 </span></span>
 <span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; max values  : 0.000834, 0.00276, 0.000502, 0.00491</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The goal of this exercise is to simultaneously prioritize sites across all four species. To do this, we can take calculate the cell-wise mean proportion of population across the species, which results in a single layer that acts as a proxy for importance.</p>
+<p>The goal of this exercise is to simultaneously prioritize sites across all four species. To do this, we calculate the cell-wise mean proportion of population across the species, which results in a single layer that acts as a proxy for importance.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># importance: mean percent of population across species</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>importance <span class="ot">&lt;-</span> <span class="fu">mean</span>(proportion_population, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
@@ -734,7 +746,7 @@ Tip
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the square root of importance since the data are right skewed</span></span>
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">sqrt</span>(importance), <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(states, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(states), <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -757,7 +769,7 @@ Tip
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(top_cells, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">legend =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(states, <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(states), <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
