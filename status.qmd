@@ -252,7 +252,7 @@ plot(abd_seasonal[["nonbreeding"]])
 All eBird Status Data Products are provided for the entire globe in an esoteric Sinusoidal equal area projection designed for analysis but not mapping. Also, notice that some areas, such as the Amazon Basin and High Arctic, have missing values (white in the map) indicating that there was insufficient data to make a prediction in the region. Other areas, such as Central America and Western Europe, have sufficient data to predict that the species is absent (light grey on the map). To produce a more useful map, we can crop and mask the data to a region of interest. For example, let's spatially subset the non-breeding season relative abundance raster for Blue-winged Teal data to the footprint of the Lower Mississippi Valley Joint Venture (LMVJV).
 
 ```{r}
-#| label: status-raster-mvjv
+#| label: status-raster-lmvjv
 # polygon for the lower mississippi valley joint venture footprint
 lmv_boundary <- paste0("https://github.com/ebird/ebirdst-workshop_tws-2023/",
                        "raw/main/data/boundaries.gpkg") %>% 
