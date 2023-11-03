@@ -19,7 +19,7 @@ This lesson will introduce you to the eBird Trends Data Products. We will demons
 ```{r}
 #| label: trends-packages
 library(dplyr)
-library(rnaturalearth)
+library(ggplot2)
 library(sf)
 library(terra)
 library(ebirdst)
@@ -137,10 +137,9 @@ A simple map of these data can be produced from the raster data. For example, we
 ```{r}
 #| label: trends-spatial-raster-map
 # define breaks and palettes similar to those on s&t website
-breaks <- seq(0, 4, by = 1)
-breaks[1] <- 0.001
+breaks <- seq(-4, 4)
+breaks[1] <- -Inf
 breaks[length(breaks)] <- Inf
-breaks <- c(-rev(breaks), breaks)
 pal <- ebirdst_palettes(length(breaks) - 1, type = "trends")
 
 # make a simple map
@@ -148,7 +147,7 @@ plot(ppy_raster[["abd_ppy"]],
      col = pal, breaks =  breaks,
      main = "Trend in relative abundance 2012-2022 [% change per year]",
      cex.main = 0.75,
-     axes = FALSE, legend = FALSE)
+     axes = FALSE)
 ```
 
 ::: callout-tip
@@ -204,13 +203,31 @@ trends_states_folds <- trends_sagthr_sf %>%
             .groups = "drop")
 
 # summarize across folds for each state
-trends_states_folds %>% 
+trends_states <- trends_states_folds %>% 
   group_by(state) %>%
   summarise(abd_ppy_median = median(abd_ppy, na.rm = TRUE),
             abd_ppy_lower = quantile(abd_ppy, 0.10, na.rm = TRUE),
             abd_ppy_upper = quantile(abd_ppy, 0.90, na.rm = TRUE),
             .groups = "drop") %>% 
   arrange(abd_ppy_median)
+head(trends_states)
+```
+
+We can join these state-level trends back to the state boundaries and make a map with `ggplot2`.
+
+```{r}
+#| label: trends-applications-regional-map
+trends_states_sf <- left_join(states, trends_states)
+ggplot(trends_states_sf) +
+  geom_sf(aes(fill = abd_ppy_median)) +
+  scale_fill_distiller(palette = "Reds", 
+                       limits = c(NA, 0),
+                       na.value = "grey80") +
+  guides(fill = guide_colorbar(title.position = "top", barwidth = 15)) +
+  labs(title = "Trends for sagebrush species 2012-2022",
+       fill = "Relative abundance trend [% change / year]") +
+  theme_bw() +
+  theme(legend.position = "bottom")
 ```
 
 Based on these data, Sage Thrasher populations appear to be in decline throughout their entire range; however, some states (e.g. South Dakota) are experiencing much steeper declines than others (e.g. California).
@@ -233,7 +250,7 @@ Everything looks good, so we can proceed to compare trends for these species. Ne
 ebirdst_download_trends(sagebrush_species)
 ```
 
-Finally, we can load the trends and calculate the cell-wise mean to determine the average trend for the three species.
+Now we can load the trends and calculate the cell-wise mean to determine the average trend for the three species.
 
 ```{r}
 #| label: trends-applications-multi-mean
@@ -245,5 +262,26 @@ trends_sagebrush <- trends_sagebrush_species %>%
   summarize(n_species = n(),
             abd_ppy = mean(abd_ppy, na.rm = TRUE),
             .groups = "drop")
-print(trends_sagebrush)
+head(trends_sagebrush)
 ```
+
+Finally, let's make a map of these sagebrush trends, focusing only on those cells where all three species occur.
+
+```{r}
+#| label: trends-applications-multi-map
+all_species <- trends_sagebrush %>% 
+  filter(n_species == length(sagebrush_species)) %>% 
+  st_as_sf(coords = c("longitude", "latitude"),
+           crs = 4326)
+ggplot(all_species) +
+  geom_sf(aes(color = abd_ppy), size = 2) +
+  scale_color_gradient2(low = "#CB181D", high = "#2171B5",
+                        limits = c(-4, 4), 
+                        oob = scales::oob_squish) +
+  guides(color = guide_colorbar(title.position = "left", barheight = 15)) +
+  labs(title = "Sage Thrasher state-level trends 2012-2022",
+       color = "Relative abundance trend [% change / year]") +
+  theme_bw() +
+  theme(legend.title = element_text(angle = 90))
+```
+
