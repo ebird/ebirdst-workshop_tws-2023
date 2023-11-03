@@ -269,10 +269,13 @@ Finally, let's make a map of these sagebrush trends, focusing only on those cell
 
 ```{r}
 #| label: trends-applications-multi-map
+# convert the points to sf format
 all_species <- trends_sagebrush %>% 
   filter(n_species == length(sagebrush_species)) %>% 
   st_as_sf(coords = c("longitude", "latitude"),
            crs = 4326)
+
+# make a map
 ggplot(all_species) +
   geom_sf(aes(color = abd_ppy), size = 2) +
   scale_color_gradient2(low = "#CB181D", high = "#2171B5",
