@@ -164,7 +164,7 @@ trend_ppy <- -1
 
 ## Uncertainty {#sec-trends-uncertainty}
 
-The model used to estimate trends produces an ensemble of 100 estimates at each location, each based on a random subsample of eBird data. This ensemble of estimates is used to quantify uncertainty in the trends estimates. The estimated trend is the median across the ensemble, and the 80% confidence intervals are the lower 10th and upper 90th percentiles across the ensemble. Those wishing to access estimates from the individual folds making up the ensemble can use `fold_estimates = TRUE` when loading data. These fold-level estimates can be used to quantify uncertainty, for example, when calculating the trend for a given region. For example, let's load the fold-level estimates for Sage Thrasher:
+Recall that the trends data frame contained estimates of uncertainty in the relative abundance trend given as 80% confidence intervals. How were these confidence intervals calculated? The model used to estimate trends produces an ensemble of 100 estimates for each grid cell, each based on a random subsample of eBird data. This ensemble of estimates is used to quantify uncertainty in the trends estimates. The estimated trend is the median across the ensemble, and the 80% confidence intervals are the lower 10th and upper 90th percentiles across the ensemble. Those wishing to access estimates from the individual folds making up the ensemble can use `fold_estimates = TRUE` when loading data. These fold-level estimates can be used to quantify uncertainty, for example, when calculating the trend for a given region. For example, let's load the fold-level estimates for Sage Thrasher:
 
 ```{r uncertainty}
 #| label: trends-uncertainty
@@ -224,13 +224,64 @@ ggplot(trends_states_sf) +
                        limits = c(NA, 0),
                        na.value = "grey80") +
   guides(fill = guide_colorbar(title.position = "top", barwidth = 15)) +
-  labs(title = "Trends for sagebrush species 2012-2022",
+  labs(title = "Sage Thrasher state-level trends 2012-2022",
        fill = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.position = "bottom")
 ```
 
 Based on these data, Sage Thrasher populations appear to be in decline throughout their entire range; however, some states (e.g. South Dakota) are experiencing much steeper declines than others (e.g. California).
+
+::: {.callout-caution icon="false"}
+## Exercise
+
+Select a species of interest to you, download trends data for this species and estimate the state-level trends with confidence intervals. For more of a challenge, estimate the trends over a different set of regions of relevance to you, e.g. estimate trends for [Bird Conservation Regions (BCRs)](https://www.birdscanada.org/bird-science/nabci-bird-conservation-regions), or try using 90% confidence intervals.
+:::
+
+::: {.callout-note icon="false" collapse="true"}
+## Solution
+
+Let's estimate state-level trends for Blue-winged Teal with 90% confidence intervals.
+
+```{r}
+#| label: trends-applications-regional-sol
+ebirdst_download_trends("buwtea")
+trends_buwtea_sf <-  load_trends("buwtea", fold_estimates = TRUE) %>% 
+  # convert fold-level trends estimates to sf format
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
+  # attach state to the fold-level trends data
+  st_join(states, left = FALSE)
+
+# abundance-weighted average trend by region and fold
+trends_buwtea_states_folds <- trends_buwtea_sf %>%
+  st_drop_geometry() %>%
+  group_by(state, fold) %>%
+  summarize(abd_ppy = sum(abd * abd_ppy) / sum(abd),
+            .groups = "drop")
+
+# summarize across folds for each state
+trends_buwtea_states <- trends_buwtea_states_folds %>% 
+  group_by(state) %>%
+  summarise(abd_ppy_median = median(abd_ppy, na.rm = TRUE),
+            abd_ppy_lower = quantile(abd_ppy, 0.10, na.rm = TRUE),
+            abd_ppy_upper = quantile(abd_ppy, 0.90, na.rm = TRUE),
+            .groups = "drop") %>% 
+  arrange(abd_ppy_median)
+
+# map state-level trends
+trends_buwtea_states_sf <- left_join(states, trends_buwtea_states)
+ggplot(trends_buwtea_states_sf) +
+  geom_sf(aes(fill = abd_ppy_median)) +
+  scale_fill_distiller(palette = "Reds", 
+                       limits = c(NA, 0),
+                       na.value = "grey80") +
+  guides(fill = guide_colorbar(title.position = "top", barwidth = 15)) +
+  labs(title = "Blue-winged Teal state-level trends 2012-2022",
+       fill = "Relative abundance trend [% change / year]") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+:::
 
 ### Multi-species trends {#sec-trends-applications-multi}
 
@@ -282,7 +333,7 @@ ggplot(all_species) +
                         limits = c(-4, 4), 
                         oob = scales::oob_squish) +
   guides(color = guide_colorbar(title.position = "left", barheight = 15)) +
-  labs(title = "Sage Thrasher state-level trends 2012-2022",
+  labs(title = "Trends for sagebrush species 2012-2022",
        color = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.title = element_text(angle = 90))

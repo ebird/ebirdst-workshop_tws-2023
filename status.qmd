@@ -133,6 +133,18 @@ abd_median <- load_raster("buwtea", product = "abundance")
 print(abd_median)
 ```
 
+::: callout-tip
+## Tip
+
+Throughout this workshop, and the `ebirdst` documentation, we frequently use eBird species codes (e.g. "buwtea" above). These alphanumeric codes uniquely identifying species in eBird and are typically of 6 letters, sometimes followed by a single number. You can always look these codes up in the `ebirdst_runs` data frame.
+
+```{r}
+#| label: status-load-weekly-tip
+filter(ebirdst_runs, common_name == "Ring-necked Duck") %>% select(species_code)
+filter(ebirdst_runs, species_code == "mallar3") %>% select(common_name)
+```
+:::
+
 ::: callout-important
 ## Checkpoint
 
@@ -225,21 +237,21 @@ abd_weekly[["2022-05-17"]]
 abd_seasonal[["breeding"]]
 ```
 
-We can also subset the weekly cube to a range of weeks. For example, let's subset to only the estimates for weeks in May, then take the average across the weeks.
+We can also subset the weekly cube to a range of weeks. For example, let's subset to only the estimates for weeks in November, then take the average across the weeks.
 
 ```{r}
 #| label: status-raster-mean
 # determine which dates we want to include
 week_dates <- as.Date(names(abd_weekly))
-start_date <- as.Date("2022-05-01")
-end_date <- as.Date("2022-05-31")
-week_in_may <- week_dates >= start_date & week_dates <= end_date
+start_date <- as.Date("2022-11-01")
+end_date <- as.Date("2022-11-30")
+week_in_nov <- week_dates >= start_date & week_dates <= end_date
 
-# subset to weeks in may
-abd_weekly_may <- abd_weekly[[week_in_may]]
+# subset to weeks in nov
+abd_weekly_nov <- abd_weekly[[week_in_nov]]
 
 # average across weeks
-mean(abd_weekly_may, na.rm = TRUE)
+mean(abd_weekly_nov, na.rm = TRUE)
 ```
 
 Making a simple map of the data will produce unexpected results. For example, let's map the non-breeding season relative abundance for Blue-winged Teal.
@@ -295,33 +307,33 @@ Let's start by downloading data for Canvasback (recall we already downloaded the
 
 ```{r}
 #| label: status-applications-trajectories-data
-# download data
+# download data for canvasback
 ebirdst_download_status("Canvasback", pattern = "_27km_")
 
-# proportion of population cubes
+# load proportion of population cubes for both species
 pop_buwtea <- load_raster("buwtea", 
                           product = "proportion-population", 
-                          resolution = "9km")
+                          resolution = "27km")
 pop_canvas <- load_raster("canvas", 
                           product = "proportion-population", 
-                          resolution = "9km")
+                          resolution = "27km")
 ```
 
 Now, we'll use the R package `exactextractr` to calculate the sum of the proportions for each species within the LMVJV.
 
 ```{r}
 #| label: status-applications-trajectories-summarize
-# calculate total proportion of population within lmvjv
+# calculate weekly proportion of population within lmvjv
 # blue-winged teal
 traj_buwtea <- exact_extract(pop_buwtea, lmv_boundary, fun = "sum")
 traj_buwtea <- data.frame(species = "Blue-winged Teal",
-                           week = as.Date(names(pop_buwtea)),
-                           prop_pop = as.numeric(traj_buwtea[1, ]))
+                          week = as.Date(names(pop_buwtea)),
+                          prop_pop = as.numeric(traj_buwtea[1, ]))
 # canvasback
 traj_canvas <- exact_extract(pop_canvas, lmv_boundary, fun = "sum")
 traj_canvas <- data.frame(species = "Canvasback",
-                           week = as.Date(names(pop_canvas)),
-                           prop_pop = as.numeric(traj_canvas[1, ]))
+                          week = as.Date(names(pop_canvas)),
+                          prop_pop = as.numeric(traj_canvas[1, ]))
 
 # combine
 trajectories <- bind_rows(traj_buwtea, traj_canvas)
@@ -341,6 +353,44 @@ ggplot(trajectories, aes(x = week, y = prop_pop, color = species)) +
        color = NULL) +
   theme(legend.position = "bottom")
 ```
+
+::: {.callout-caution icon="false"}
+## Exercise
+
+Calculate a trajectory for Mallard in the LMVJV and plot the data.
+:::
+
+::: {.callout-note icon="false" collapse="true"}
+## Solution
+
+```{r}
+#| label: status-applications-trajectories-sol
+# download mallard data
+ebirdst_download_status("Mallard", pattern = "_27km_")
+
+# load proportion of population cube
+pop_mallard <- load_raster("Mallard", 
+                           product = "proportion-population", 
+                           resolution = "27km")
+
+# calculate proportion of mallard population within lmvjv
+traj_mallard <- exact_extract(pop_mallard, lmv_boundary, fun = "sum")
+traj_mallard <- data.frame(species = "Mallard",
+                           week = as.Date(names(pop_mallard)),
+                           prop_pop = as.numeric(traj_mallard[1, ]))
+
+# plot the trajectory
+ggplot(traj_buwtea, aes(x = week, y = prop_pop, color = species)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Week", 
+       y = "% of population",
+       title = "Weekly % of population trajectory for Mallard in LMVJV",
+       color = NULL) +
+  theme(legend.position = "bottom")
+
+```
+:::
 
 ### Prioritization {#sec-status-applications-prioritization}
 
@@ -382,7 +432,7 @@ The goal of this exercise is to simultaneously prioritize sites across all four 
 
 ```{r}
 #| label: status-applications-prioritization-importance
-# importance: mean percent of population across species
+# generate importance layer: mean percent of population across species
 importance <- mean(proportion_population, na.rm = TRUE)
 
 # plot the square root of importance since the data are right skewed
