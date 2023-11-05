@@ -50,9 +50,20 @@ download.file("https://cornell.box.com/shared/static/qn7knt6o865853uhbqqlr9fhz3m
 
 # unzip
 unzip(tf, exdir = td)
-source_dir <- file.path(td, "2022")
+files <- list.files(td, recursive = TRUE)
+files <- files[grepl("^2022/", files)]
 dest_dir <- ebirdst::ebirdst_data_dir()
-file.copy(source_dir, dest_dir, recursive = TRUE, overwrite = TRUE)
+# create directories
+for (d in unique(dirname(files))) {
+  dir.create(file.path(dest_dir, d), showWarnings = FALSE, recursive = TRUE)
+}
+# copy files
+for (f in files) {
+  if (!file.exists(file.path(dest_dir, f))) {
+    file.copy(from = file.path(td, f), 
+              to = file.path(dest_dir, f))
+  }
+}
 
 # clean up
 unlink(td, recursive = TRUE)
