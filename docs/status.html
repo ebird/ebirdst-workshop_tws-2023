@@ -373,7 +373,7 @@ Solution
 <ul>
 <li><strong>Occurrence</strong>: the expected probability of encountering a species.</li>
 <li><strong>Count</strong>: the expected count of a species, conditional on its occurrence at the given location.</li>
-<li><strong>Relative abundance</strong>: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively.</li>
+<li><strong>Relative abundance</strong>: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively. <strong>This is what’s displayed by the maps on the Status and Trends website</strong>.</li>
 <li><strong>Proportion of population</strong>: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.</li>
 </ul>
 <p>All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three available resolutions are:</p>
@@ -406,7 +406,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Throughout this workshop, and the <code>ebirdst</code> documentation, we frequently use eBird species codes (e.g.&nbsp;“buwtea” above). These alphanumeric codes uniquely identifying species in eBird and are typically of 6 letters, sometimes followed by a single number. You can always look these codes up in the <code>ebirdst_runs</code> data frame.</p>
+<p>Throughout this workshop, and the <code>ebirdst</code> documentation, we frequently use eBird species codes (e.g.&nbsp;“buwtea” above). These alphanumeric codes uniquely identifying species in eBird and are typically 6 letters, sometimes followed by a single number. You can always look these codes up in the <code>ebirdst_runs</code> data frame.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(ebirdst_runs, common_name <span class="sc">==</span> <span class="st">"Ring-necked Duck"</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(species_code)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 1</span></span>
@@ -431,10 +431,10 @@ Checkpoint
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Take a moment to explore the output of <code>print(abd_median)</code> to see what information is provided about the raster. You should be able to identify the number of layers (52), the resolution (2962 meters), and coordinate reference system (a sinusoidal equal area projection).</p>
+<p>Take a moment to explore the output of <code>print(abd_median)</code> to see what information is provided about the raster. You should be able to identify the number of layers (52), the resolution (2,962 meters), and coordinate reference system (a sinusoidal equal area projection).</p>
 </div>
 </div>
-<p>We often refer to these raster objects as “weekly cubes” (e.g.&nbsp;the “weekly abundance cube”). Notice that the cubes contains 52 layers, corresponding to the weeks of the year. The layer names are the dates associated with the mid-point of each week.</p>
+<p>We often refer to these raster objects as “weekly cubes” (e.g.&nbsp;the “weekly abundance cube”) because they have 2 spatial and 1 temporal dimension. Notice that the cubes contains 52 layers, corresponding to the weeks of the year. The layer names are the dates associated with the mid-point of each week.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.Date</span>(<span class="fu">names</span>(abd_median))</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] "2022-01-04" "2022-01-11" "2022-01-18" "2022-01-25" "2022-02-01"</span></span>

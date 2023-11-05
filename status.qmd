@@ -116,7 +116,7 @@ The core raster data products are the weekly estimates of occurrence, count, rel
 
 -   **Occurrence**: the expected probability of encountering a species.
 -   **Count**: the expected count of a species, conditional on its occurrence at the given location.
--   **Relative abundance**: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively.
+-   **Relative abundance**: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively. **This is what's displayed by the maps on the Status and Trends website**.
 -   **Proportion of population**: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.
 
 All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three available resolutions are:
@@ -136,7 +136,7 @@ print(abd_median)
 ::: callout-tip
 ## Tip
 
-Throughout this workshop, and the `ebirdst` documentation, we frequently use eBird species codes (e.g. "buwtea" above). These alphanumeric codes uniquely identifying species in eBird and are typically of 6 letters, sometimes followed by a single number. You can always look these codes up in the `ebirdst_runs` data frame.
+Throughout this workshop, and the `ebirdst` documentation, we frequently use eBird species codes (e.g. "buwtea" above). These alphanumeric codes uniquely identifying species in eBird and are typically  6 letters, sometimes followed by a single number. You can always look these codes up in the `ebirdst_runs` data frame.
 
 ```{r}
 #| label: status-load-weekly-tip
@@ -148,10 +148,10 @@ filter(ebirdst_runs, species_code == "mallar3") %>% select(common_name)
 ::: callout-important
 ## Checkpoint
 
-Take a moment to explore the output of `print(abd_median)` to see what information is provided about the raster. You should be able to identify the number of layers (52), the resolution (2962 meters), and coordinate reference system (a sinusoidal equal area projection).
+Take a moment to explore the output of `print(abd_median)` to see what information is provided about the raster. You should be able to identify the number of layers (52), the resolution (2,962 meters), and coordinate reference system (a sinusoidal equal area projection).
 :::
 
-We often refer to these raster objects as "weekly cubes" (e.g. the "weekly abundance cube"). Notice that the cubes contains 52 layers, corresponding to the weeks of the year. The layer names are the dates associated with the mid-point of each week.
+We often refer to these raster objects as "weekly cubes" (e.g. the "weekly abundance cube") because they have 2 spatial and 1 temporal dimension. Notice that the cubes contains 52 layers, corresponding to the weeks of the year. The layer names are the dates associated with the mid-point of each week.
 
 ```{r}
 #| label: status-load-weekly-parse

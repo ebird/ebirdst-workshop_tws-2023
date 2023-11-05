@@ -52,7 +52,7 @@ Information is provided on the trends model for each species, including two pred
 - `rsquared`: R-squared value comparing the actual and estimated trends from the simulations.
 - `beta0`: the slope of a linear model fitting actual vs. estimated trends (`actual ~ estimated`) for the simulations. Positive values of `beta0` indicate that the models are systematically *underestimating* the simulated trend for this species.
 
-Note that some season dates span two calendar years, for example Canvasback has 2011-2021 trends estimates for a non-breeding season defined as December 20 to February 8. In this case, the first season will be December 20, 2011 to February 8, 2012.
+Note that some season dates span two calendar years, for example Canvasback has 2011-2021 trends estimates for a non-breeding season defined as December 20 to January 25. In this case, the first season will be December 20, 2011 to Janurary 25, 2012.
 
 ```{r}
 #| label: trends-species-crossing
@@ -136,7 +136,7 @@ A simple map of these data can be produced from the raster data. For example, we
 
 ```{r}
 #| label: trends-spatial-raster-map
-# define breaks and palettes similar to those on s&t website
+# define breaks and palettes similar to those on status and trends website
 breaks <- seq(-4, 4)
 breaks[1] <- -Inf
 breaks[length(breaks)] <- Inf
@@ -224,7 +224,7 @@ ggplot(trends_states_sf) +
                        limits = c(NA, 0),
                        na.value = "grey80") +
   guides(fill = guide_colorbar(title.position = "top", barwidth = 15)) +
-  labs(title = "Sage Thrasher state-level trends 2012-2022",
+  labs(title = "Sage Thrasher state-level breeding trends 2012-2022",
        fill = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.position = "bottom")
@@ -276,7 +276,7 @@ ggplot(trends_buwtea_states_sf) +
                        limits = c(NA, 0),
                        na.value = "grey80") +
   guides(fill = guide_colorbar(title.position = "top", barwidth = 15)) +
-  labs(title = "Blue-winged Teal state-level trends 2012-2022",
+  labs(title = "Blue-winged Teal state-level breeding trends 2012-2022",
        fill = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.position = "bottom")
@@ -333,9 +333,8 @@ ggplot(all_species) +
                         limits = c(-4, 4), 
                         oob = scales::oob_squish) +
   guides(color = guide_colorbar(title.position = "left", barheight = 15)) +
-  labs(title = "Trends for sagebrush species 2012-2022",
+  labs(title = "Sagebrush species breeding trends (2012-2022)",
        color = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.title = element_text(angle = 90))
 ```
-

@@ -78,7 +78,7 @@ ggplot(trends_states_sf) +
                        limits = c(NA, 0),
                        na.value = "grey80") +
   guides(fill = guide_colorbar(title.position = "top", barwidth = 15)) +
-  labs(title = "Trends for sagebrush species 2012-2022",
+  labs(title = "Sage Thrasher state-level breeding trends 2012-2022",
        fill = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.position = "bottom")
@@ -107,7 +107,8 @@ ggplot(all_species) +
                         limits = c(-4, 4),
                         oob = scales::oob_squish) +
   guides(color = guide_colorbar(title.position = "left", barheight = 15)) +
-  labs(title = "Sage Thrasher state-level trends 2012-2022",
+  labs(title = "Trends for sagebrush species (breeding season 2012-2022)",
        color = "Relative abundance trend [% change / year]") +
   theme_bw() +
   theme(legend.title = element_text(angle = 90))
+
