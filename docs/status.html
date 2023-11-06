@@ -376,6 +376,19 @@ Solution
 <li><strong>Relative abundance</strong>: the expected relative abundance of a species, computed as the product of the probability of occurrence and the count conditional on occurrence. In addition to the median relative abundance, upper and lower confidence intervals (CIs) are provided, defined at the 10th and 90th quantile of relative abundance, respectively. <strong>This is what’s displayed by the maps on the Status and Trends website</strong>.</li>
 <li><strong>Proportion of population</strong>: the proportion of the total relative abundance within each cell. This is a derived product calculated by dividing each cell value in the relative abundance raster by the sum of all cell values.</li>
 </ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Relative abundance estimates are impacted by detection rates, which can vary between species and between seasons for the same species. As a result, when comparing eBird Status and Trends data across species or seasons, it’s critical to always use the percent of population layers, which have been standardized by dividing each cell value by the total relative abundance across all cells.</p>
+</div>
+</div>
 <p>All predictions are made on a standard 3 km x 3 km global grid; however, for convenience lower resolution GeoTIFFs are also provided, which are typically much faster to work with. The three available resolutions are:</p>
 <ul>
 <li>High resolution (3km): the native 3 km resolution data</li>
@@ -468,7 +481,7 @@ Exercise
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -477,7 +490,7 @@ Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>prop_pop <span class="ot">&lt;-</span> <span class="fu">load_raster</span>(<span class="st">"buwtea"</span>, </span>
@@ -652,7 +665,7 @@ Checkpoint
 </ol>
 <section id="sec-status-applications-trajectories" class="level3" data-number="1.6.1">
 <h3 data-number="1.6.1" class="anchored" data-anchor-id="sec-status-applications-trajectories"><span class="header-section-number">1.6.1</span> Trajectories</h3>
-<p>In this application, we’ll look at the change in populations for two species over the course of the year in the LMVJV. We’ll consider Blue-winged Teal and Canvasback, two migrant species that winter in the region. When comparing multiple species, or a single species between different seasons, it’s important to use the proportion of population rather than relative abundance to mitigate the impact of differences in detectability between seasons and species.</p>
+<p>In this application, we’ll look at the change in populations for two species over the course of the year in the LMVJV. We’ll consider Blue-winged Teal and Canvasback, two migrant species that winter in the region. When comparing multiple species, it’s important to use the proportion of population rather than relative abundance to mitigate the impact of differences in detectability between species.</p>
 <p>Let’s start by downloading data for Canvasback (recall we already downloaded the Blue-winged Teal data) and loading the weekly proportion of population cubes for both species. For the remainder of this workshop, we’ll work with the 27 km resolution data to ensure we can download and process data quickly. Below we use <code>pattern = "_27km_"</code> to instruct <code>ebirdst_download_status()</code> to only download the 27 km estimates. In real-world applications, you will likely want to use the full 3 km resolution data for higher precision.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download data for canvasback</span></span>
@@ -723,7 +736,7 @@ Exercise
 </div>
 </div>
 <div class="callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -732,7 +745,7 @@ Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download mallard data</span></span>
@@ -750,7 +763,7 @@ Solution
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>                           <span class="at">prop_pop =</span> <span class="fu">as.numeric</span>(traj_mallard[<span class="dv">1</span>, ]))</span>
 <span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the trajectory</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(traj_buwtea, <span class="fu">aes</span>(<span class="at">x =</span> week, <span class="at">y =</span> prop_pop, <span class="at">color =</span> species)) <span class="sc">+</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(traj_mallard, <span class="fu">aes</span>(<span class="at">x =</span> week, <span class="at">y =</span> prop_pop, <span class="at">color =</span> species)) <span class="sc">+</span></span>
 <span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
 <span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
 <span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Week"</span>, </span>
@@ -773,19 +786,6 @@ Solution
 <section id="sec-status-applications-prioritization" class="level3" data-number="1.6.2">
 <h3 data-number="1.6.2" class="anchored" data-anchor-id="sec-status-applications-prioritization"><span class="header-section-number">1.6.2</span> Prioritization</h3>
 <p>For the next application, we’ll perform a multi-species site prioritization exercise, identifying important non-breeding sites for a set of four species in the LMVJV: Blue-winged Teal, Canvasback, Mallard, and Virginia Rail. Let’s start by downloading data for species that require it, loading the seasonal proportion of population rasters, cropping to the LMVJV, and combining the rasters across species.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Relative abundance estimates are impacted by detection rates, which can vary between species. As a results, when comparing eBird Status and Trends data across species, it’s critical to always use the percent of population layers, which have been standardized by dividing each cell value by the total relative abundance across all cells.</p>
-</div>
-</div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>species_list <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"buwtea"</span>, <span class="st">"canvas"</span>, <span class="st">"mallard"</span>, <span class="st">"virrai"</span>)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>proportion_population <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
